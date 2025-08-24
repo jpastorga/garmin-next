@@ -30,7 +30,17 @@ export async function POST(req: NextRequest) {
       const batch = await fetchActivitiesPage(String(athleteId), { page, perPage: pageSize, sinceEpoch, untilEpoch });
       if (!batch.length) break;
 
-      const rows = batch.slice(0, maxTotal - total).map((act: any) => ({
+      type StravaActivity = {
+        id: number;
+        name?: string;
+        start_date?: string;
+        distance?: number;
+        moving_time?: number;
+        type?: string;
+        [key: string]: unknown;
+      };
+
+      const rows = batch.slice(0, maxTotal - total).map((act: StravaActivity) => ({
         id: act.id as number,
         user_id: userId as string,
         name: act.name ?? null,
@@ -53,7 +63,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ ok: true, imported, pages: page - 1 });
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || String(e) }, { status: 500 });
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: (e as Error)?.message || String(e) }, { status: 500 });
   }
 }

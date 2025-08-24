@@ -72,7 +72,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const items = (data ?? []).map((a: any) => {
+  type ActivityRow = {
+    id: number;
+    name: string | null;
+    start_date: string | null;
+    distance_m: number | null;
+    moving_time_s: number | null;
+    type: string | null;
+  };
+
+  const items = (data ?? []).map((a: ActivityRow) => {
     const distance_km = a.distance_m != null ? Number(a.distance_m) / 1000 : null;
     const pace_min_km = computePace(a.distance_m, a.moving_time_s);
     return { ...a, distance_km, pace_min_km };

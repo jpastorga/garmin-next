@@ -79,8 +79,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ ok: true, ignored: `aspect_type=${event.aspect_type}` });
-  } catch (e: any) {
-    console.error("webhook POST error:", e?.message || e);
+  } catch (e: unknown) {
+    console.error("webhook POST error:", (e as Error)?.message || e);
     return NextResponse.json({ ok: true, error: String(e) });
   }
 }

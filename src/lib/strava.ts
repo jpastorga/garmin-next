@@ -170,10 +170,20 @@ export async function fetchActivitiesPage(
   if (sinceEpoch) qs.set("after", String(sinceEpoch));
   if (untilEpoch) qs.set("before", String(untilEpoch));
 
+  type StravaActivity = {
+    id: number;
+    name?: string;
+    start_date?: string;
+    distance?: number;
+    moving_time?: number;
+    type?: string;
+    [key: string]: unknown;
+  };
+
   const url = `${STRAVA.api}/athlete/activities?${qs.toString()}`;
   const r = await fetch(url, { headers: { Authorization: `Bearer ${access}` } });
   if (!r.ok) throw new Error(`Strava /athlete/activities (page) => ${r.status}`);
-  return (await r.json()) as any[];
+  return (await r.json()) as StravaActivity[];
 }
 
 /** List athlete_ids registered (for debug) reading from Supabase */
@@ -183,11 +193,11 @@ export async function listUserIds(): Promise<string[]> {
     .select("athlete_id");
 
   if (error) throw error;
-  return (data ?? []).map((u: any) => String(u.athlete_id));
+  return (data ?? []).map((u: { athlete_id: string | number }) => String(u.athlete_id));
 }
 
 export const fetchActivities = fetchActivitiesByAthlete;
 
-export function getTokens(_userId: string) {
+export function getTokens() {
   throw new Error("getTokens() is no longer used. Read tokens from Supabase (ensureAccessTokenForAthlete).");
 }
