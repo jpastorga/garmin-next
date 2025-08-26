@@ -1,4 +1,3 @@
-
 import { supabaseAdmin } from "@/lib/supabase";
 
 /**
@@ -101,7 +100,10 @@ export async function ensureAccessTokenForAthlete(athleteId: string): Promise<{
  * - `userId` here is the athlete_id (as you were using).
  * - Converts expires_at epoch (number) to timestamptz ISO.
  */
-export async function saveTokens(athleteId: string, t: { access_token: string; refresh_token: string; expires_at: number }) {
+export async function saveTokens(
+  athleteId: string,
+  t: { access_token: string; refresh_token: string; expires_at: number }
+) {
   // upsert user (in case it comes from an old callback)
   const { data: u } = await supabaseAdmin
     .from("users")
@@ -112,18 +114,16 @@ export async function saveTokens(athleteId: string, t: { access_token: string; r
   const userId = u?.id || (await getUserIdByAthleteId(String(athleteId)));
   const expiresISO = new Date(t.expires_at * 1000).toISOString();
 
-  const { error } = await supabaseAdmin
-    .from("strava_tokens")
-    .upsert(
-      {
-        user_id: userId,
-        access_token: t.access_token,
-        refresh_token: t.refresh_token,
-        expires_at: expiresISO,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "user_id" }
-    );
+  const { error } = await supabaseAdmin.from("strava_tokens").upsert(
+    {
+      user_id: userId,
+      access_token: t.access_token,
+      refresh_token: t.refresh_token,
+      expires_at: expiresISO,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id" }
+  );
 
   if (error) throw error;
 }
@@ -188,9 +188,7 @@ export async function fetchActivitiesPage(
 
 /** List athlete_ids registered (for debug) reading from Supabase */
 export async function listUserIds(): Promise<string[]> {
-  const { data, error } = await supabaseAdmin
-    .from("users")
-    .select("athlete_id");
+  const { data, error } = await supabaseAdmin.from("users").select("athlete_id");
 
   if (error) throw error;
   return (data ?? []).map((u: { athlete_id: string | number }) => String(u.athlete_id));
@@ -199,5 +197,7 @@ export async function listUserIds(): Promise<string[]> {
 export const fetchActivities = fetchActivitiesByAthlete;
 
 export function getTokens() {
-  throw new Error("getTokens() is no longer used. Read tokens from Supabase (ensureAccessTokenForAthlete).");
+  throw new Error(
+    "getTokens() is no longer used. Read tokens from Supabase (ensureAccessTokenForAthlete)."
+  );
 }

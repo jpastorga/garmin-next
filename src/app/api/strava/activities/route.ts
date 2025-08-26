@@ -20,7 +20,7 @@ function computePace(distance_m: number | null, moving_time_s: number | null): s
   if (!distance_m || !moving_time_s) return null;
   const km = Number(distance_m) / 1000;
   if (!isFinite(km) || km <= 0) return null;
-  const minPerKm = (moving_time_s / 60) / km;
+  const minPerKm = moving_time_s / 60 / km;
   if (!isFinite(minPerKm) || minPerKm <= 0) return null;
   return formatPace(minPerKm);
 }
@@ -31,8 +31,8 @@ export async function GET(req: NextRequest) {
   const limit = clamp(parseInt(url.searchParams.get("limit") ?? "10", 10), 1, 100);
   const page = Math.max(1, parseInt(url.searchParams.get("page") ?? "1", 10));
   const type = url.searchParams.get("type") || undefined;
-  const since = url.searchParams.get("since") || undefined;      // ISO string
-  const until = url.searchParams.get("until") || undefined;      // ISO string
+  const since = url.searchParams.get("since") || undefined; // ISO string
+  const until = url.searchParams.get("until") || undefined; // ISO string
 
   if (!athleteId) {
     return NextResponse.json({ error: "missing athleteId" }, { status: 400 });
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
   if (uerr || !userRow) {
     return NextResponse.json({
       data: [],
-      meta: { athleteId, page, pageSize: limit, total: 0, hasMore: false }
+      meta: { athleteId, page, pageSize: limit, total: 0, hasMore: false },
     });
   }
 

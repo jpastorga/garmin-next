@@ -5,7 +5,7 @@ import { getUserIdByAthleteId, fetchActivitiesPage } from "@/lib/strava";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 
 export async function POST(req: NextRequest) {
@@ -27,7 +27,12 @@ export async function POST(req: NextRequest) {
     let imported = 0;
 
     while (total < maxTotal) {
-      const batch = await fetchActivitiesPage(String(athleteId), { page, perPage: pageSize, sinceEpoch, untilEpoch });
+      const batch = await fetchActivitiesPage(String(athleteId), {
+        page,
+        perPage: pageSize,
+        sinceEpoch,
+        untilEpoch,
+      });
       if (!batch.length) break;
 
       type StravaActivity = {
@@ -64,6 +69,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, imported, pages: page - 1 });
   } catch (e: unknown) {
-    return NextResponse.json({ ok: false, error: (e as Error)?.message || String(e) }, { status: 500 });
+    return NextResponse.json(
+      { ok: false, error: (e as Error)?.message || String(e) },
+      { status: 500 }
+    );
   }
 }

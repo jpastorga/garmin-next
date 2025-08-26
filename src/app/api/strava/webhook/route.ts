@@ -40,7 +40,6 @@ export async function POST(req: NextRequest) {
     const activityId = String(event.object_id);
 
     if (event.aspect_type === "create" || event.aspect_type === "update") {
-
       const { data: userRow, error: uerr } = await supabaseAdmin
         .from("users")
         .select("id")

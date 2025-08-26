@@ -27,18 +27,19 @@ export async function GET(req: NextRequest) {
     .single();
   if (uerr) throw uerr;
 
-  const { error: terr } = await supabaseAdmin
-    .from("strava_tokens")
-    .upsert({
+  const { error: terr } = await supabaseAdmin.from("strava_tokens").upsert(
+    {
       user_id: userRow.id,
       access_token: data.access_token,
       refresh_token: data.refresh_token,
       expires_at: expiresAt,
       updated_at: new Date(),
-    }, { onConflict: "user_id" });
+    },
+    { onConflict: "user_id" }
+  );
 
   if (terr) throw terr;
 
   const base = process.env.PUBLIC_BASE_URL || new URL(req.url).origin;
-  return Response.redirect(new URL("/", base), 302);
+  return Response.redirect(new URL(`/?athleteId=${athleteId}`, base), 302);
 }
