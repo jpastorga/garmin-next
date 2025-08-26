@@ -2,6 +2,72 @@
 
 import { useEffect, useState } from "react";
 
+// Strava activity types to emojis mapping
+const getActivityEmoji = (type: string | null): string => {
+  if (!type) return "🏃‍♂️";
+
+  const typeMap: Record<string, string> = {
+    // Running
+    Run: "🏃‍♂️",
+    VirtualRun: "🏃‍♂️",
+    TrailRun: "🏃‍♂️",
+
+    // Cycling
+    Ride: "🚴‍♂️",
+    VirtualRide: "🚴‍♂️",
+    MountainBikeRide: "🚵‍♂️",
+    GravelRide: "🚴‍♂️",
+    EBikeRide: "🚴‍♂️",
+
+    // Swimming
+    Swim: "🏊‍♂️",
+    VirtualSwim: "🏊‍♂️",
+
+    // Walking/Hiking
+    Walk: "🚶‍♂️",
+    Hike: "🥾",
+    VirtualWalk: "🚶‍♂️",
+
+    // Winter Sports
+    AlpineSki: "⛷️",
+    BackcountrySki: "⛷️",
+    Snowboard: "🏂",
+    Snowshoe: "⛷️",
+    IceSkate: "⛸️",
+
+    // Water Sports
+    Kayaking: "🛶",
+    Canoeing: "🛶",
+    Kitesurf: "🪁",
+    Windsurf: "🏄‍♂️",
+    Surf: "🏄‍♂️",
+    StandUpPaddling: "🏄‍♂️",
+
+    // Gym/Indoor
+    WeightTraining: "🏋️‍♂️",
+    Workout: "💪",
+    Crossfit: "🏋️‍♂️",
+    Yoga: "🧘‍♂️",
+    Pilates: "🧘‍♀️",
+    StairStepper: "🏃‍♂️",
+    Elliptical: "🏃‍♂️",
+
+    // Sports
+    Soccer: "⚽",
+    Basketball: "🏀",
+    Tennis: "🎾",
+    Golf: "🏌️‍♂️",
+    BadmintonGame: "🏸",
+
+    // Other
+    RockClimbing: "🧗‍♂️",
+    InlineSkate: "🛼",
+    Skateboard: "🛹",
+  };
+
+  return typeMap[type] || "🏃‍♂️"; // default fallback
+};
+
 interface Activity {
   id: number;
   name: string | null;
@@ -121,9 +187,12 @@ export default function ActivitiesList({ athleteId }: ActivitiesListProps) {
           >
             <div className="flex justify-between items-start">
               <div className="flex-1">
-                <h3 className="font-medium text-gray-900">
-                  {activity.name || "Activity without name"}
-                </h3>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">{getActivityEmoji(activity.type)}</span>
+                  <h3 className="font-medium text-gray-900">
+                    {activity.name || "Activity without name"}
+                  </h3>
+                </div>
                 <p className="text-sm text-gray-500 mt-1">{formatDate(activity.start_date)}</p>
                 <div className="flex gap-4 mt-2 text-sm text-gray-600">
                   <span className="bg-gray-100 px-2 py-1 rounded">
